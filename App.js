@@ -1,77 +1,130 @@
-import React, {useEffect} from 'react';
-import { View, Text, Button, StyleSheet, Alert, Platform } from 'react-native';
-import * as Notifications from "expo-notifications";
-import * as Device from 'expo-device';
-
-Notifications.setNotificationHandler({
-  handleNotification: async () => ({
-    shouldShowAlert: true,
-    shouldPlaySound: false,
-    shouldSetBadge: false,
-  }),
-});
+import React, { useState } from 'react';
+import { View, Text, FlatList, TouchableOpacity, StyleSheet, Dimensions } from 'react-native';
+import { getWeekDays } from './services/CalendarUtils';
+import CalendarScreen from './screens/CalendarScreen';
+import { PanGestureHandler } from 'react-native-gesture-handler';
 
 export default function App() {
-  useEffect(() => {
-    registerForPushNotificationsAsync();
-    scheduleMorningReminder();
-  }, []);
+  const week = getWeekDays();
+  const [viewMode, setViewMode] = useState('week');
+  const [selectedDate, setSelectedDate] = useState(week[0].formatted);
+  const [tasksByDate, setTasksByDate] = useState({
+    [week[0].formatted]: [
+      { id: '1', title: 'Buy milk', done: false },
+      { id: '2', title: 'Feed the cat', done: true },
+    ],
+    [week[1].formatted]: [
+      { id: '3', title: 'Call Mom', done: false },
+    ]
+  });
 
-  const handleAction = () => {
-    Alert.alert("Sidekick אומר:", "אל תשכח לקחת אוכל לילדים 💡");
-  };
-
-  const scheduleMorningReminder = async () => {
-    await Notifications.cancelAllScheduledNotificationsAsync(); // כדי לא ליצור כפילויות
-
-    await Notifications.scheduleNotificationAsync({
-      content: {
-        title: "🤖 Sidekick",
-        body: "הבוקר התחיל! אל תשכח אוכל, מפתחות, חיבוק!",
-      },
-      trigger: {
-        hour: 7,
-        minute: 30,
-        repeats: true,
-      },
+  const toggleTaskDone = (id) => {
+    setTasksByDate(prev => {
+      const updatedTasks = prev[selectedDate].map(task =>
+        task.id === id ? { ...task, done: !task.done } : task
+      );
+      return { ...prev, [selectedDate]: updatedTasks };
     });
   };
 
-
-  const registerForPushNotificationsAsync = async () => {
-    if (Device.isDevice) {
-      const { status: existingStatus } = await Notifications.getPermissionsAsync();
-      let finalStatus = existingStatus;
-      if (existingStatus !== 'granted') {
-        const { status } = await Notifications.requestPermissionsAsync();
-        finalStatus = status;
-      }
-      if (finalStatus !== 'granted') {
-        alert('לא ניתנה הרשאה להתראות!');
-        return;
-      }
-    } else {
-      alert('צריך להריץ את זה על מכשיר אמיתי');
+  const onSwipe = (event) => {
+    const { translationX } = event.nativeEvent;
+    if (translationX < -50) {
+      setViewMode('month'); // החלקה שמאלה
+    } else if (translationX > 50) {
+      setViewMode('week'); // החלקה ימינה
     }
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>🤖 My AI Sidekick</Text>
-      <Button title="תן לי טיפ לבוקר" onPress={handleAction} />
-    </View>
+    <PanGestureHandler onGestureEvent={onSwipe}>
+      <View style={styles.container}>
+        {/* טאב עליון */}
+        <View style={styles.nav}>
+          <Text style={[styles.navText, viewMode === 'week' && styles.active]}>שבוע</Text>
+          <Text style={[styles.navText, viewMode === 'month' && styles.active]}>חודש</Text>
+        </View>
+
+        {viewMode === 'week' ? (
+          <>
+            <Text style={styles.title}>📅 Select a Day</Text>
+            <FlatList
+              horizontal
+              data={week}
+              keyExtractor={item => item.formatted}
+              renderItem={({ item }) => (
+                <TouchableOpacity
+                  style={[
+                    styles.dayButton,
+                    selectedDate === item.formatted && styles.daySelected,
+                  ]}
+                  onPress={() => setSelectedDate(item.formatted)}
+                >
+                  <Text>{item.formatted.split(',')[0]}</Text>
+                  <Text>{item.formatted.split(',')[1]}</Text>
+                </TouchableOpacity>
+              )}
+            />
+
+            <Text style={styles.subTitle}>📝 Tasks for {selectedDate}</Text>
+            <FlatList
+              data={tasksByDate[selectedDate] || []}
+              keyExtractor={item => item.id}
+              renderItem={({ item }) => (
+                <TouchableOpacity onPress={() => toggleTaskDone(item.id)}>
+                  <Text style={[styles.task, item.done && styles.done]}>
+                    {item.title}
+                  </Text>
+                </TouchableOpacity>
+              )}
+            />
+          </>
+        ) : (
+          <CalendarScreen />
+        )}
+      </View>
+    </PanGestureHandler>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
+  container: { flex: 1, paddingTop: 50, paddingHorizontal: 16, backgroundColor: '#fff' },
+  nav: {
+    flexDirection: 'row',
     justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#fff',
+    marginBottom: 10,
   },
-  title: {
-    fontSize: 28,
-    marginBottom: 20,
+  navText: {
+    fontSize: 16,
+    marginHorizontal: 10,
+    color: '#888',
+  },
+  active: {
+    color: '#007bff',
+    fontWeight: 'bold',
+    textDecorationLine: 'underline',
+  },
+  title: { fontSize: 24, marginBottom: 10 },
+  subTitle: { fontSize: 20, marginTop: 20, marginBottom: 10 },
+  dayButton: {
+    padding: 10,
+    marginRight: 8,
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 10,
+  },
+  daySelected: {
+    backgroundColor: '#def',
+    borderColor: '#39f',
+  },
+  task: {
+    fontSize: 18,
+    paddingVertical: 10,
+    borderBottomColor: '#eee',
+    borderBottomWidth: 1,
+  },
+  done: {
+    textDecorationLine: 'line-through',
+    color: 'gray',
   },
 });
