@@ -1,31 +1,39 @@
 export default {
-    name: "main",
-    displayName: "ai-sidekick",
-    expo: {
-      name: "ai-sidekick",
-      slug: "ai-sidekick",
-      version: "1.0.0",
-      orientation: "portrait",
-      icon: "./assets/icon.png",
-      userInterfaceStyle: "light",
-      newArchEnabled: true,
-      splash: {
-        image: "./assets/splash-icon.png",
-        resizeMode: "contain",
-        backgroundColor: "#ffffff"
-      },
-      ios: {
-        supportsTablet: true
-      },
-      android: {
-        adaptiveIcon: {
-          foregroundImage: "./assets/adaptive-icon.png",
-          backgroundColor: "#ffffff"
-        }
-      },
-      web: {
-        favicon: "./assets/favicon.png"
+  name: "ai-sidekick",
+  slug: "ai-sidekick",
+  version: "1.0.0",
+  orientation: "portrait",
+  icon: "./assets/icon.png",
+  userInterfaceStyle: "light",
+  splash: {
+    image: "./assets/splash.png",
+    resizeMode: "contain",
+    backgroundColor: "#ffffff"
+  },
+  platforms: ["ios", "android", "web"], // הוספנו תמיכה מפורשת ב־web
+  android: {
+    package: "com.nikitaservaisky.aisidekick",
+    intentFilters: [
+      {
+        action: "VIEW",
+        data: {
+          scheme: "aisidekick"
+        },
+        category: ["BROWSABLE", "DEFAULT"]
       }
-    }
-  };
-  
+    ]
+  },
+  ios: {
+    bundleIdentifier: "com.anonymous.aisidekick"
+  },
+  web: {
+    bundler: "metro" // הגדרה ברורה ש־expo web ירוץ עם מטרו
+  },
+  updates: {
+    fallbackToCacheTimeout: 0
+  },
+  assetBundlePatterns: ["**/*"],
+  runtimeVersion: {
+    policy: "sdkVersion"
+  }
+};
