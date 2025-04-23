@@ -3,31 +3,36 @@ import {
   View,
   Text,
   StyleSheet,
-  // ScrollView,
   SafeAreaView,
   KeyboardAvoidingView,
   Platform,
 } from "react-native";
-import { getWeekDays } from "../services/CalendarUtils";
-import { getInitialTasks } from "../services/taskManager";
+import { Provider, useSelector, useDispatch } from "react-redux";
+import { store } from "../redux/store";
 import WeekView from "../components/weekViewComponent/WeekView";
 import TaskList from "../components/taskListComponent/TaskList";
-import { useNavigation } from "@react-navigation/native";
+import { getWeekDays } from "../services/CalendarUtils";
 import globalStyles from "../styles/globalStyles";
+import {
+  toggleTaskDone,
+} from "../features/tasks/tasksSlice";
 
-export default function App() {
-  const navigation = useNavigation();
+function MainApp() {
+  const dispatch = useDispatch();
   const week = getWeekDays();
   const [selectedDate, setSelectedDate] = useState(week[0].formatted);
-  const [tasksByDate, setTasksByDate] = useState(getInitialTasks(week));
 
-  const toggleTaskDone = (id) => {
-    setTasksByDate((prev) => {
-      const updatedTasks = prev[selectedDate].map((task) =>
-        task.id === id ? { ...task, done: !task.done } : task
-      );
-      return { ...prev, [selectedDate]: updatedTasks };
-    });
+  // לצורך הדוגמה – נשלוף את כל המשימות מהסטייט הגלובלי
+  const taskLists = useSelector((state) => state.tasks.taskLists);
+
+  // ננסה למצוא משימות שתואמות לתאריך הנבחר (בהמשך תוכל לסדר לפי listId)
+  const tasksForDay = taskLists.find(
+    (list) => list.title === selectedDate // תתאים את זה למבנה שלך
+  )?.tasks || [];
+
+  const handleToggleTask = (taskId) => {
+    // בגרסה אמיתית תשלוף גם listId לפי הסדר שלך
+    dispatch(toggleTaskDone({ listId: "todo", taskId }));
   };
 
   return (
@@ -47,21 +52,22 @@ export default function App() {
 
           <Text style={styles.subTitle}>📝 Tasks for {selectedDate}</Text>
 
-          <TaskList
-            tasks={tasksByDate[selectedDate] || []}
-            toggleTaskDone={toggleTaskDone}
-          />
+          <TaskList tasks={tasksForDay} toggleTaskDone={handleToggleTask} />
         </View>
       </KeyboardAvoidingView>
     </SafeAreaView>
   );
 }
 
+export default function App() {
+  return (
+    <Provider store={store}>
+      <MainApp />
+    </Provider>
+  );
+}
+
 const styles = StyleSheet.create({
-  scrollContainer: {
-    padding: 16,
-    flexGrow: 1,
-  },
   subTitle: {
     fontSize: 20,
     marginTop: 20,

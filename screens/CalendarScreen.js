@@ -30,10 +30,7 @@ export default function CalendarScreen() {
         {days.map((item, index) => (
           <TouchableOpacity
             key={index}
-            style={[
-              styles.cell,
-              selectedDay === item.day && styles.selectedCell,
-            ]}
+            style={[styles.cell, selectedDay === item.day && styles.selectedCell]}
             onPress={() => setSelectedDay(item.day)}
           >
             <Text style={styles.cellText}>{item.day}</Text>
@@ -51,17 +48,6 @@ export default function CalendarScreen() {
 }
 
 const styles = StyleSheet.create({
-  // container: {
-  //   flex: 1,
-  //   paddingTop: 50,
-  //   paddingHorizontal: 16,
-  //   backgroundColor: "#fff",
-  // },
-  // title: {
-  //   fontSize: 24,
-  //   marginBottom: 20,
-  //   fontWeight: "bold",
-  // },
   grid: {
     flexDirection: "row",
     flexWrap: "wrap",

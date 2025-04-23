@@ -15,9 +15,8 @@ export default StyleSheet.create({
         elevation: 4,
       },
       ios: {
-        shadowColor: "#000",
-        shadowOpacity: 0.1,
-        shadowRadius: 4,
+        // shadow* props removed for web compatibility
+        boxShadow: "0 2px 6px rgba(0,0,0,0.1)",
       },
       web: {
         boxShadow: "0 2px 6px rgba(0,0,0,0.1)",

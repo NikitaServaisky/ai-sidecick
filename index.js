@@ -5,13 +5,10 @@ import React from 'react';
 import AppNavigator from './navigation';
 import { registerRootComponent } from 'expo';
 
-// const appName = "main";
-
 const Root = () => (
   <GestureHandlerRootView style={{ flex: 1 }}>
     <AppNavigator />
   </GestureHandlerRootView>
 );
 
-// AppRegistry.registerComponent(AppNavigator, () => Root);
 registerRootComponent(Root);
