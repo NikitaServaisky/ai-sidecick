@@ -1,36 +1,20 @@
-# Learn more https://docs.github.com/en/get-started/getting-started-with-git/ignoring-files
-
-# dependencies
+# תלויות והתקנות אוטומטיות
 node_modules/
 
-# Expo
+# קבצים של Expo
 .expo/
-dist/
-web-build/
-expo-env.d.ts
+.expo-shared/
 
-# Native
-*.orig.*
-*.jks
-*.p8
-*.p12
-*.key
-*.mobileprovision
+# לוגים זמניים
+*.log
 
-# Metro
-.metro-health-check*
+# קבצי סביבת עבודה פרטיים
+.vscode/
+.idea/
 
-# debug
-npm-debug.*
-yarn-debug.*
-yarn-error.*
+# קבצי סביבה עם מידע רגיש
+.env
+.env.*
 
-# macOS
-.DS_Store
-*.pem
-
-# local env files
-.env*.local
-
-# typescript
-*.tsbuildinfo
+# קבצים זמניים
+*.tmp
