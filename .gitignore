@@ -18,3 +18,5 @@ node_modules/
 
 # קבצים זמניים
 *.tmp
+android/
+ios/
