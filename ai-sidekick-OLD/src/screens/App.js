@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -7,31 +7,30 @@ import {
   KeyboardAvoidingView,
   Platform,
 } from "react-native";
-import { Provider, useSelector, useDispatch } from "react-redux";
+
+import { Provider, useDispatch, useSelector } from "react-redux";
 import { store } from "../redux/store";
+import * as SecureStore from "expo-secure-store";
+
 import WeekView from "../components/weekViewComponent/WeekView";
 import TaskList from "../components/taskListComponent/TaskList";
 import { getWeekDays } from "../services/CalendarUtils";
 import globalStyles from "../styles/globalStyles";
-import {
-  toggleTaskDone,
-} from "../features/tasks/tasksSlice";
+import { toggleTaskDone } from "../features/tasks/tasksSlice";
+import { loginSuccess } from "../redux/slices/authSlice";
+import LoginScreen from "./LoginScreen"; // ודא שהנתיב נכון לפי מיקומך
 
 function MainApp() {
   const dispatch = useDispatch();
   const week = getWeekDays();
   const [selectedDate, setSelectedDate] = useState(week[0].formatted);
 
-  // לצורך הדוגמה – נשלוף את כל המשימות מהסטייט הגלובלי
   const taskLists = useSelector((state) => state.tasks.taskLists);
 
-  // ננסה למצוא משימות שתואמות לתאריך הנבחר (בהמשך תוכל לסדר לפי listId)
-  const tasksForDay = taskLists.find(
-    (list) => list.title === selectedDate // תתאים את זה למבנה שלך
-  )?.tasks || [];
+  const tasksForDay =
+    taskLists.find((list) => list.title === selectedDate)?.tasks || [];
 
   const handleToggleTask = (taskId) => {
-    // בגרסה אמיתית תשלוף גם listId לפי הסדר שלך
     dispatch(toggleTaskDone({ listId: "todo", taskId }));
   };
 
@@ -59,10 +58,37 @@ function MainApp() {
   );
 }
 
+function AppWrapper() {
+  const dispatch = useDispatch();
+  const [checkingAuth, setCheckingAuth] = useState(true);
+  const token = useSelector((state) => state.auth.token); // 👈 מפה נדע אם מחובר
+
+  useEffect(() => {
+    const checkLogin = async () => {
+      try {
+        const token = await SecureStore.getItemAsync("token");
+        if (token) {
+          dispatch(loginSuccess({ token }));
+        }
+      } catch (err) {
+        console.error("Auth check failed:", err);
+      } finally {
+        setCheckingAuth(false);
+      }
+    };
+
+    checkLogin();
+  }, []);
+
+  if (checkingAuth) return null;
+
+  return token ? <MainApp /> : <LoginScreen />;
+}
+
 export default function App() {
   return (
     <Provider store={store}>
-      <MainApp />
+      <AppWrapper />
     </Provider>
   );
 }

@@ -1,7 +1,10 @@
 import React, { useState } from "react";
 import { View, TextInput, Button, Text, StyleSheet } from "react-native";
+
 import { useDispatch } from "react-redux";
 import { loginSuccess } from "../redux/slices/authSlice";
+import axiosInstance from "../axios/axiosInstance";
+import * as SecureStore from "expo-secure-store";
 
 export default function LoginScreen({ navigation }) {
   const dispatch = useDispatch();
@@ -12,26 +15,21 @@ export default function LoginScreen({ navigation }) {
 
   const handleLogin = async () => {
     try {
-      if (!email || !password) {
-        setError("כל השדות נדרשים");
-        return;
-      }
+      const response = await axiosInstance.post("/login", { email, password });
+      const token = response.data.token;
+      const user = response.data.user;
 
-      const response = await fakeLogin(email, password);
-
-      if (!response.success) {
-        setError("אימייל או סיסמה שגויים");
-        return;
-      }
-
-      const token = "dummy-token";
-      const user = { email };
+      await SecureStore.setItemAsync("token", token);
 
       dispatch(loginSuccess({ user, token }));
-      navigation.replace("Home");
-    } catch (err) {
-      setError("אירעה שגיאה. נסה שוב מאוחר יותר.");
+      
+    } catch (error) {
+      setError("התחברות נכשלה. בדוק את הפרטים ונסה שוב.");
     }
+  };
+
+  const redirectToSingUp = () => {
+    navigation.replace("Registration");
   };
 
   return (
@@ -54,22 +52,10 @@ export default function LoginScreen({ navigation }) {
         style={styles.input}
       />
       <Button title="התחבר" onPress={handleLogin} />
+      <Button title="הירשם" onPress={redirectToSingUp} />
     </View>
   );
 }
-
-// Simulated login - replace with real API call later
-const fakeLogin = async (email, password) => {
-  return new Promise((resolve) =>
-    setTimeout(
-      () =>
-        resolve({
-          success: email === "test@test.com" && password === "1234",
-        }),
-      500
-    )
-  );
-};
 
 const styles = StyleSheet.create({
   container: {

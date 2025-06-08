@@ -1,7 +1,7 @@
+import React from 'react';
 import 'react-native-gesture-handler';
 import { AppRegistry } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import React from 'react';
 import AppNavigator from './navigation';
 import { registerRootComponent } from 'expo';
 import { Provider } from 'react-redux';

@@ -28,11 +28,16 @@ const RegistrationSchema = new mongoose.Schema({
     type: Boolean,
     default: false,
   },
-//   profilePicture: {
-//     type: String,
-//     default: null,
-//     required: false,
-//   },
+  profilePicture: {
+    type: String,
+    default: null,
+    required: false,
+  },
+  profileLevel: {
+    type: String,
+    enum: [ 'basic', 'full' ],
+    default: 'basic',
+  },
   createdAt: {
     type: Date,
     default: Date.now,

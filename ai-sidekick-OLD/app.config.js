@@ -33,6 +33,7 @@ export default {
       eas: {
         projectId: "a95da3c5-6043-410d-9a38-763e47b7f50b"
       }
-    }
+    },
+    plugins: ['expo-secure-store'],
   }
 };
