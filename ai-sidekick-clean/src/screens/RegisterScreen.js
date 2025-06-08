@@ -2,17 +2,47 @@ import React, { useState } from "react";
 import { navigateTo } from "../utils/navigationHalper";
 import { Button, StyleSheet, Text, TextInput, View } from "react-native";
 
+import axiosInstance from "../services/axiosInstance";
+import * as SecureStore from 'expo-secure-store';
+import { useDispatch } from "react-redux";
+import { loginSuccess } from "../redux/slices/authSlice";
+
 export default function RegisterScreen({ navigation }) {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [error, setError] = useState("");
 
-  const handleRegister = () => {
+  const dispatch = useDispatch();
+
+  const handleRegister = async () => {
     if (password !== confirmPassword) {
-      alert("הסיסמאות לא תואמות");
-      return;
+      setError('בסיסמאות אינן תואמות');
+    }
+
+    try {
+      const responce = await axiosInstance.post('/registration', {
+        firstName,
+        lastName,
+        email,
+        password
+      });
+      const {
+        token,
+        user,
+      } = responce.data;
+
+      await SecureStore.setItemAsync('token', token);
+      dispatch(loginSuccess({user, token}));
+    } catch (err) {
+      console.error('אירוע שגיאה בעט הרשמה', err);
+      if (err.responce && err.responce.data.message) {
+        setError(err.responce.data.message);
+      } else {
+        setError('שגיאה לא ידוע')
+      }
     }
 
     // בהמשך: שלח לשרת
@@ -57,6 +87,7 @@ export default function RegisterScreen({ navigation }) {
         secureTextEntry
         style={styles.input}
       />
+      { error !== '' && <Text style={styles.error}>{error}</Text>}
       <Button title="הירשם" onPress={handleRegister} />
       <Button
         title="כבר רשום? התחבר"
@@ -85,4 +116,9 @@ const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 5,
   },
+  error: {
+    color: 'red',
+    textAlign: 'center',
+    marginBottom: 10,
+  }
 });
