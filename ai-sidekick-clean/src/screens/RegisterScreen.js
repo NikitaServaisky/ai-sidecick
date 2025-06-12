@@ -5,7 +5,7 @@ import { Button, StyleSheet, Text, TextInput, View } from "react-native";
 import axiosInstance from "../services/axiosInstance";
 import * as SecureStore from 'expo-secure-store';
 import { useDispatch } from "react-redux";
-import { loginSuccess } from "../redux/slices/authSlice";
+import { loginSuccess } from "../features/auth/authSlice";
 
 export default function RegisterScreen({ navigation }) {
   const [firstName, setFirstName] = useState("");

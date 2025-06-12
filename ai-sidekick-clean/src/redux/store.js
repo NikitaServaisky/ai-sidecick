@@ -1,8 +1,10 @@
 import { configureStore } from "@reduxjs/toolkit";
-import authReducer from './slices/authSlice';
+import authReducer from '../features/auth/authSlice';
+import tasksReducer from '../features/tasks/tasksSlice';
 
 export const store = configureStore({
     reducer: {
         auth: authReducer,
+        task: tasksReducer,
     },
 });

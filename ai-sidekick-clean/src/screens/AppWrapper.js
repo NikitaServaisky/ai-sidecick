@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
-import { loginSuccess } from "../redux/slices/authSlice";
+import { loginSuccess } from "../features/auth/authSlice";
 import * as SecureStore from "expo-secure-store";
 
 import AppNavigator from "../navigation/appNavigator";

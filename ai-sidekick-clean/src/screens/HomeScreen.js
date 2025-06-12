@@ -3,7 +3,7 @@ import { View, text, Button, StyleSheet } from "react-native";
 
 import * as SecureStore from "expo-secure-store"
 import { useDispatch } from "react-redux";
-import { logout } from "../redux/slices/authSlice";
+import { logout } from "../features/auth/authSlice";
 
 import { navigateTo } from "../utils/navigationHalper";
 

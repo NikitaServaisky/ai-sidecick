@@ -5,7 +5,7 @@ import { navigateTo } from "../utils/navigationHalper";
 import axiosInstance from "../services/axiosInstance";
 import * as SecureStore from "expo-secure-store";
 import { useDispatch } from "react-redux";
-import { loginSuccess } from "../redux/slices/authSlice";
+import { loginSuccess } from "../features/auth/authSlice";
 
 export default function LoginScreen({ navigation }) {
   const [email, setEmail] = useState("");
