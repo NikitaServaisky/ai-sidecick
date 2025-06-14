@@ -2,13 +2,12 @@ import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { loginSuccess } from "../features/auth/authSlice";
 import * as SecureStore from "expo-secure-store";
-
 import AppNavigator from "../navigation/appNavigator";
 
 export default function AppWrapper() {
   const dispatch = useDispatch();
   const [isLoading, setIsLoading] = useState(true);
-  const [isAuthticted, setIsAuthenticated] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
     const checkToken = async () => {
@@ -29,5 +28,5 @@ export default function AppWrapper() {
 
   if (isLoading) return null;
 
-  return <AppNavigator isAuthticted={isAuthticted} />
+  return <AppNavigator isAuthenticated={isAuthenticated} />;
 }
