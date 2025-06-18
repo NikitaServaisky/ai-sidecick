@@ -1,8 +1,12 @@
 require("dotenv").config();
+
 const express = require("express");
-const authRoutes = require('./routes/authRoutes');
 const connectDB = require('./config/dbConfig');
 const cors = require("cors");
+
+const authRoutes = require('./routes/authRoutes');
+const holidaysRoutes = require('./routes/holidaysRoutes');
+const runHolidayCheck = require("./cron/holidayScheduler");
 
 const port = process.env.PORT || 5000;
 
@@ -16,9 +20,11 @@ app.get('/', (req, res) => {
 })
 
 app.use('/', authRoutes);
+app.use('/holidays', holidaysRoutes)
 
 app.listen(port, () => {
     console.log(`Server running on port: ${port}`)
 }) 
 
 connectDB();
+require('./cron/holidayScheduler');

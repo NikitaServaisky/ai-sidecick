@@ -12,6 +12,7 @@
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
+    "@hebcal/core": "^5.9.8",
     "bcrypt": "^6.0.0",
     "cors": "^2.8.5",
     "dotenv": "^16.5.0",
@@ -19,6 +20,7 @@
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.14.3",
     "multer": "^2.0.0",
+    "node-cron": "^4.1.0",
     "uuid": "^11.1.0"
   },
   "devDependencies": {
