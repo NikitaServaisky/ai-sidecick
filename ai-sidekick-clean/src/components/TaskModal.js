@@ -36,7 +36,7 @@ export default function TaskModal({ visible, onClose, modalDay, tasks }) {
           </ScrollView>
 
           <Pressable style={styles.closeButton} onPress={onClose}>
-            <Text style={{ color: "white", fontWeight: "bold" }}>סגור</Text>
+            <Text style={styles.buttonText}>סגור</Text>
           </Pressable>
         </View>
       </View>
@@ -85,5 +85,9 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     borderRadius: 10,
     alignItems: "center",
+  },
+  buttonText: {
+    color: "white",
+    fontWeight: "bold",
   },
 });
