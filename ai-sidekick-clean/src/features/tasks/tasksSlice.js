@@ -19,7 +19,7 @@ const tasksSlice = createSlice({
           state.taskLists.push({ dayKey: date, tasks: [task] });
         }
       },
-      prepare(date, text, time = "") {
+      prepare(date, text, time = "", type, phone = "", email = "", notes = "", attachment = null, imageUri = null ) {
         return {
           payload: {
             date,
@@ -27,6 +27,12 @@ const tasksSlice = createSlice({
               id: nanoid(),
               text,
               time,
+              type,
+              phone,
+              email,
+              notes,
+              attachment,
+              imageUri,
               isDone: false,
             },
           },
@@ -56,7 +62,7 @@ export const selectTasksForDay = (dayKey) =>
     (state) => state.tasks.taskLists,
     (taskLists) => {
       const day = taskLists.find((d) => d.dayKey === dayKey);
-      return day ? day.task : [];
+      return day ? day.tasks : [];
     }
   );
 

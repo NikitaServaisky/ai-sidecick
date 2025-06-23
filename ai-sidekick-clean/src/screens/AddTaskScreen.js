@@ -3,43 +3,48 @@ import {
   View,
   Text,
   TextInput,
-  TouchableOpacity,
-  Platform,
+  StyleSheet,
+  Pressable,
+  Alert,
 } from "react-native";
-import DateTimePicker from "@react-native-community/datetimepicker";
+import { useDispatch } from "react-redux";
 import * as DocumentPicker from "expo-document-picker";
 import * as ImagePicker from "expo-image-picker";
 import * as MediaLibrary from "expo-media-library";
 
-import { saveFileLocally } from "../utils/fileUtils";
-import { saveFilePathSecurely } from "../utils/secureFileStore";
 import TaskTypePicker from "../components/TaskTypePicker";
+import DatePicker from "../components/DatePicker";
+import TimePicker from "../components/TimePicker";
+import ImageSelector from "../components/ImageSelector";
+import FilePicker from "../components/FilePicker";
+import { addTask } from "../features/tasks/tasksSlice";
+import { saveFileLocally } from "../utils/fileUtils";
+import { formatDateKey, formatTimeString } from "../utils/taskHelpers";
 
 export default function AddTaskScreen() {
+  const dispatch = useDispatch();
+
   const [date, setDate] = useState(new Date());
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showTimePicker, setShowTimePicker] = useState(false);
-
   const [typeTask, setTypeTask] = useState(null);
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
   const [notes, setNotes] = useState("");
-  const [attchment, setAttachment] = useState(null);
+  const [attachment, setAttachment] = useState(null);
   const [image, setImage] = useState(null);
 
   const handleDateChange = (event, selectedDate) => {
-    if (selectedDate) {
-      setDate(selectedDate);
-    }
+    if (selectedDate) setDate(selectedDate);
     setShowDatePicker(false);
   };
 
   const handleTimeChange = (event, selectedTime) => {
     if (selectedTime) {
-      const updateData = new Date(date);
-      updateData.setHours(selectedTime.getHours());
-      updateData.setMinutes(selectedTime.getMinutes());
-      setDate(updateData);
+      const updated = new Date(date);
+      updated.setHours(selectedTime.getHours());
+      updated.setMinutes(selectedTime.getMinutes());
+      setDate(updated);
     }
     setShowTimePicker(false);
   };
@@ -52,27 +57,25 @@ export default function AddTaskScreen() {
         multiple: false,
       });
 
-      if (result.assets && result.assets.length > 0 && result.assets[0].uri) {
+      if (result.assets?.length > 0) {
         const file = result.assets[0];
         const localUri = await saveFileLocally(file.uri, file.name);
         setAttachment({ ...file, uri: localUri });
-        await saveFilePathSecurely('taskDocs', localUri);
       }
     } catch (err) {
-      console.log("Error picking document:", err);
+      console.log("שגיאה בבחירת מסמך:", err);
+      alert("לא הצלחנו לבחור מסמך.");
     }
   };
 
   const handlePickImage = async () => {
-    console.log("נכנס לפונקציה handlePickImage");
-
     const { status: mediaStatus } =
       await MediaLibrary.requestPermissionsAsync();
     const { status: pickerStatus } =
       await ImagePicker.requestMediaLibraryPermissionsAsync();
 
     if (mediaStatus !== "granted" || pickerStatus !== "granted") {
-      alert("צריך הרשאה לגשת לגלריה כדי לעלות תמונות");
+      alert("צריך הרשאה לגלריה כדי לבחור תמונה.");
       return;
     }
 
@@ -83,119 +86,116 @@ export default function AddTaskScreen() {
         quality: 0.7,
       });
 
-      console.log("תוצאה מהגלריה:", result);
-
       if (!result.canceled && result.assets?.length > 0) {
         const asset = result.assets[0];
         const localUri = await saveFileLocally(
           asset.uri,
-          `image-${Date.now()}.jpeg`
+          `image-${Date.now()}.jpg`
         );
         setImage({ ...asset, uri: localUri });
-        await saveFilePathSecurely('taskImages', localUri);
       }
     } catch (err) {
       console.log("שגיאה בגלריה:", err);
-      alert("שגיאה בגישה לגלריה");
+      alert("שגיאה בגישה לגלריה.");
     }
   };
 
-  const handleTakePhoto = async () => {
-    const { status } = await ImagePicker.requestCameraPermissionsAsync();
-    if (status !== "granted") {
-      alert("צריך הרשאה למצלמה כדי לצלם");
-      return;
-    }
+  const handleSaveTask = () => {
+    const dateKey = formatDateKey(date);
+    const timeString = formatTimeString(date);
 
-    const result = await ImagePicker.launchCameraAsync({
-      allowsEditing: true,
-      quality: 0.7,
-    });
+    dispatch(
+      addTask({
+        date: dateKey,
+        text: notes || "משימה ללא שם",
+        time: timeString,
+        type: typeTask,
+        phone,
+        email,
+        notes,
+        attachment,
+        imageUri: image?.uri || null,
+      })
+    );
 
-    if (!result.canceled) {
-      setImage(result.assets[0]);
-    }
+    Alert.alert("הצלחה", "המשימה נשמרה בהצלחה");
   };
 
   return (
-    <View>
-      <TextInput multiline={true} placeholder="Task title" />
+    <View style={styles.container}>
+      <TextInput
+        multiline
+        placeholder="תיאור המשימה"
+        value={notes}
+        onChangeText={setNotes}
+        style={styles.input}
+      />
 
-      <TouchableOpacity onPress={() => setShowDatePicker(true)}>
-        <Text> תאריך: {date.toLocaleDateString()}</Text>
-      </TouchableOpacity>
+      <DatePicker
+        date={date}
+        show={showDatePicker}
+        onChange={handleDateChange}
+        onToggle={() => setShowDatePicker(true)}
+      />
 
-      <TouchableOpacity onPress={() => setShowTimePicker(true)}>
-        <Text>
-          שעה:{" "}
-          {date.toLocaleTimeString([], { hour: "2-digit", minutes: "2-digit" })}
-        </Text>
-      </TouchableOpacity>
+      <TimePicker
+        date={date}
+        show={showTimePicker}
+        onChange={handleTimeChange}
+        onToggle={() => setShowTimePicker(true)}
+      />
 
-      {showDatePicker && (
-        <DateTimePicker
-          mode="date"
-          value={date}
-          onChange={handleDateChange}
-          display={Platform.OS === "ios" ? "spinner" : "default"}
-        />
-      )}
-
-      {showTimePicker && (
-        <DateTimePicker
-          mode="time"
-          value={date}
-          onChange={handleTimeChange}
-          display={Platform.OS === "ios" ? "spinner" : "default"}
-        />
-      )}
-
-      <Text>בחר סוג משימה:</Text>
+      <Text style={{ marginTop: 15 }}>בחר סוג משימה:</Text>
       <TaskTypePicker taskType={typeTask} setTaskType={setTypeTask} />
 
       <TextInput
-        placeholder="מספר טלפון (לא חובה)"
+        placeholder="טלפון"
         value={phone}
         onChangeText={setPhone}
         keyboardType="phone-pad"
+        style={styles.input}
       />
 
       <TextInput
-        placeholder="כתובת מייל (לא חובה)"
+        placeholder="אימייל"
         value={email}
         onChangeText={setEmail}
         keyboardType="email-address"
+        style={styles.input}
       />
 
-      <TextInput
-        placeholder="העאות נוספות"
-        value={notes}
-        onChangeText={setNotes}
-        multiline
-      />
+      <FilePicker onPress={handlePickDocument} />
 
-      <TouchableOpacity onPress={handlePickDocument}>
-        <Text style={{ color: "blue" }}>
-          {attchment ? `${attchment.name}` : "בחר קוצץ לצירוף"}
-        </Text>
-      </TouchableOpacity>
+      <ImageSelector onPress={handlePickImage} imageUri={image?.uri} />
 
-      <View style={{ flexDirection: "row", marginTop: 20, gap: 10 }}>
-        <TouchableOpacity onPress={handlePickImage}>
-          <Text style={{ color: "blue" }}>מהגלריה</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity onPress={handleTakePhoto}>
-          <Text style={{ color: "green" }}>מצלמה</Text>
-        </TouchableOpacity>
-      </View>
-
-      {image && (
-        <Image
-          source={{ uri: image.uri }}
-          style={{ width: 200, height: 200, marginTop: 10 }}
-        />
-      )}
+      <Pressable style={styles.saveButton} onPress={handleSaveTask}>
+        <Text style={styles.saveButtonText}>💾 שמור משימה</Text>
+      </Pressable>
     </View>
   );
 }
+
+export const styles = StyleSheet.create({
+  container: { flex: 1, padding: 20, backgroundColor: "#fff" },
+  input: {
+    borderBottomWidth: 1,
+    borderColor: "#ccc",
+    marginBottom: 15,
+    padding: 8,
+  },
+  link: {
+    color: "blue",
+    marginTop: 10,
+  },
+  saveButton: {
+    backgroundColor: "#000",
+    padding: 15,
+    borderRadius: 8,
+    marginTop: 30,
+    alignItems: "center",
+  },
+  saveButtonText: {
+    color: "#fff",
+    fontSize: 18,
+  },
+});

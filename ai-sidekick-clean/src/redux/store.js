@@ -4,7 +4,6 @@ import tasksReducer from "../features/tasks/tasksSlice";
 
 import { persistStore, persistReducer } from "redux-persist";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-// import { EncryptedPersistStorage } from "../utils/encryptedStorage";
 
 import { combineReducers } from "@reduxjs/toolkit";
 
