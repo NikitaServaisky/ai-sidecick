@@ -22,12 +22,12 @@ export default function LoginScreen({ navigation }) {
 
       await SecureStore.setItemAsync("token", token);
       dispatch(loginSuccess({ user, token }));
+
+      console.log("Trying to login with:", email, password);
+      // navigateTo(navigation, "Main", {}, true);
     } catch (err) {
       setError("ההתחברות נכשלה בדוק את הפרטים");
     }
-
-    console.log("Trying to login with:", email, password);
-    navigateTo(navigation, "Home", {}, true);
   };
 
   return (

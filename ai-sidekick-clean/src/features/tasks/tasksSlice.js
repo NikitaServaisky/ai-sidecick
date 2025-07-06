@@ -19,25 +19,26 @@ const tasksSlice = createSlice({
           state.taskLists.push({ dayKey: date, tasks: [task] });
         }
       },
-      prepare(date, text, time = "", type, phone = "", email = "", notes = "", attachment = null, imageUri = null ) {
-        return {
-          payload: {
-            date,
-            task: {
-              id: nanoid(),
-              text,
-              time,
-              type,
-              phone,
-              email,
-              notes,
-              attachment,
-              imageUri,
-              isDone: false,
-            },
-          },
-        };
+prepare(date, title, time = "", type, phone = "", email = "", notes = "", attachment = null, imageUri = null) {
+  return {
+    payload: {
+      date,
+      task: {
+        id: nanoid(),
+        title,
+        time,
+        type,
+        phone,
+        email,
+        notes,
+        attachment,
+        imageUri,
+        isDone: false,
       },
+    },
+  };
+}
+
     },
     toggleTaskDone(state, action) {
       const { date, taskId } = action.payload;

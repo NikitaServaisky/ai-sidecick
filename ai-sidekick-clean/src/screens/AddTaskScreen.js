@@ -7,10 +7,12 @@ import {
   Pressable,
   Alert,
 } from "react-native";
-import { useDispatch } from "react-redux";
-import * as DocumentPicker from "expo-document-picker";
-import * as ImagePicker from "expo-image-picker";
-import * as MediaLibrary from "expo-media-library";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  setTempImage,
+  setTempAttachment,
+  clearTempTaskData,
+} from "../features/tasks/taskTempSlice";
 
 import TaskTypePicker from "../components/TaskTypePicker";
 import DatePicker from "../components/DatePicker";
@@ -18,21 +20,22 @@ import TimePicker from "../components/TimePicker";
 import ImageSelector from "../components/ImageSelector";
 import FilePicker from "../components/FilePicker";
 import { addTask } from "../features/tasks/tasksSlice";
-import { saveFileLocally } from "../utils/fileUtils";
 import { formatDateKey, formatTimeString } from "../utils/taskHelpers";
+import { handlePickDocument, handlePickImage } from "../utils/handlers";
 
 export default function AddTaskScreen() {
   const dispatch = useDispatch();
+  const image = useSelector((state) => state.taskTemp.image);
+  const attachment = useSelector((state) => state.taskTemp.attachment);
 
   const [date, setDate] = useState(new Date());
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showTimePicker, setShowTimePicker] = useState(false);
   const [typeTask, setTypeTask] = useState(null);
+  const [title, setTitle] = useState("");
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
   const [notes, setNotes] = useState("");
-  const [attachment, setAttachment] = useState(null);
-  const [image, setImage] = useState(null);
 
   const handleDateChange = (event, selectedDate) => {
     if (selectedDate) setDate(selectedDate);
@@ -49,54 +52,17 @@ export default function AddTaskScreen() {
     setShowTimePicker(false);
   };
 
-  const handlePickDocument = async () => {
-    try {
-      const result = await DocumentPicker.getDocumentAsync({
-        type: "*/*",
-        copyToCacheDirectory: true,
-        multiple: false,
-      });
-
-      if (result.assets?.length > 0) {
-        const file = result.assets[0];
-        const localUri = await saveFileLocally(file.uri, file.name);
-        setAttachment({ ...file, uri: localUri });
-      }
-    } catch (err) {
-      console.log("שגיאה בבחירת מסמך:", err);
-      alert("לא הצלחנו לבחור מסמך.");
+  const handleImageSelection = async () => {
+    const pickedImage = await handlePickImage();
+    if (pickedImage) {
+      dispatch(setTempImage(pickedImage));
     }
   };
 
-  const handlePickImage = async () => {
-    const { status: mediaStatus } =
-      await MediaLibrary.requestPermissionsAsync();
-    const { status: pickerStatus } =
-      await ImagePicker.requestMediaLibraryPermissionsAsync();
-
-    if (mediaStatus !== "granted" || pickerStatus !== "granted") {
-      alert("צריך הרשאה לגלריה כדי לבחור תמונה.");
-      return;
-    }
-
-    try {
-      const result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ImagePicker.MediaTypeOptions.Images,
-        allowsEditing: true,
-        quality: 0.7,
-      });
-
-      if (!result.canceled && result.assets?.length > 0) {
-        const asset = result.assets[0];
-        const localUri = await saveFileLocally(
-          asset.uri,
-          `image-${Date.now()}.jpg`
-        );
-        setImage({ ...asset, uri: localUri });
-      }
-    } catch (err) {
-      console.log("שגיאה בגלריה:", err);
-      alert("שגיאה בגישה לגלריה.");
+  const handleDocumentSelection = async () => {
+    const pickedFile = await handlePickDocument();
+    if (pickedFile) {
+      dispatch(setTempAttachment(pickedFile));
     }
   };
 
@@ -105,29 +71,36 @@ export default function AddTaskScreen() {
     const timeString = formatTimeString(date);
 
     dispatch(
-      addTask({
-        date: dateKey,
-        text: notes || "משימה ללא שם",
-        time: timeString,
-        type: typeTask,
+      addTask(
+        dateKey,
+        title || "משימה ללא שם",
+        timeString,
+        typeTask,
         phone,
         email,
         notes,
         attachment,
-        imageUri: image?.uri || null,
-      })
+        image?.uri || null
+      )
     );
 
+    dispatch(clearTempTaskData());
     Alert.alert("הצלחה", "המשימה נשמרה בהצלחה");
   };
+
+  console.log("TaskTypePicker:", TaskTypePicker);
+  console.log("DatePicker:", DatePicker);
+  console.log("TimePicker:", TimePicker);
+  console.log("ImageSelector:", ImageSelector);
+  console.log("FilePicker:", FilePicker);
 
   return (
     <View style={styles.container}>
       <TextInput
         multiline
         placeholder="תיאור המשימה"
-        value={notes}
-        onChangeText={setNotes}
+        value={title}
+        onChangeText={setTitle}
         style={styles.input}
       />
 
@@ -164,9 +137,9 @@ export default function AddTaskScreen() {
         style={styles.input}
       />
 
-      <FilePicker onPress={handlePickDocument} />
+      <FilePicker onPress={handleDocumentSelection} />
 
-      <ImageSelector onPress={handlePickImage} imageUri={image?.uri} />
+      <ImageSelector onPress={handleImageSelection} imageUri={image?.uri} />
 
       <Pressable style={styles.saveButton} onPress={handleSaveTask}>
         <Text style={styles.saveButtonText}>💾 שמור משימה</Text>

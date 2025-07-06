@@ -11,7 +11,6 @@ import WeekCarusel from "../components/WeekCarusel";
 import DailyTasksList from "../components/DailyTasksList";
 import { navigateTo } from "../utils/navigationHalper";
 
-
 export default function HomeScreen() {
   const weekDays = getCurrentWeekDates();
   const todayKey = weekDays.find((day) => day.isToday)?.key || weekDays[0].key;
@@ -51,7 +50,12 @@ export default function HomeScreen() {
       <DailyTasksList tasks={tasks} />
 
       <Pressable style={styles.addButton}>
-        <Text style={styles.addButtonText} onPress={() => navigateTo(navigation, 'Add-task')}>+</Text>
+        <Text
+          style={styles.addButtonText}
+          onPress={() => navigateTo(navigation, "Add-task")}
+        >
+          +
+        </Text>
       </Pressable>
     </View>
   );
