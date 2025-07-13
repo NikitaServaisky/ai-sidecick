@@ -52,7 +52,7 @@ export default function HomeScreen() {
       <Pressable style={styles.addButton}>
         <Text
           style={styles.addButtonText}
-          onPress={() => navigateTo(navigation, "Add-task")}
+          onPress={() => navigateTo(navigation, "AddTask")}
         >
           +
         </Text>

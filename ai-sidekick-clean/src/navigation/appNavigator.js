@@ -9,6 +9,8 @@ import DrawerNavigator from "./DrawerNavigator";
 const Stack = createNativeStackNavigator();
 
 export default function AppNavigator({ isAuthenticated }) {
+  console.log("isAuthenticated:", isAuthenticated);
+
   return (
     <NavigationContainer>
       <Stack.Navigator screenOptions={{ headerShown: false }}>

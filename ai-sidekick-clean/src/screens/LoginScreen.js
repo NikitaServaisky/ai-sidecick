@@ -21,10 +21,10 @@ export default function LoginScreen({ navigation }) {
       const token = responce.data.token;
 
       await SecureStore.setItemAsync("token", token);
+      await SecureStore.setItemAsync("user", JSON.stringify(user))
       dispatch(loginSuccess({ user, token }));
 
       console.log("Trying to login with:", email, password);
-      // navigateTo(navigation, "Main", {}, true);
     } catch (err) {
       setError("ההתחברות נכשלה בדוק את הפרטים");
     }
