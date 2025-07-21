@@ -3,6 +3,8 @@ import { ActivityIndicator, View } from "react-native";
 import * as SecureStore from "expo-secure-store";
 import { useSelector, useDispatch } from "react-redux";
 
+import { STORAGE_KEYS } from "../constans/constans";
+
 import AppNavigator from "../navigation/appNavigator";
 import { loginSuccess } from "../features/auth/authSlice";
 import jwtDecode from "jwt-decode";
@@ -19,7 +21,7 @@ export default function AppWrapper() {
     const fallbackLoadFromSecureStore = async () => {
       // trying to restore token from redux if miss token
       if (!token) {
-        const storedToken = await SecureStore.getItemAsync("token");
+        const storedToken = await SecureStore.getItemAsync(STORAGE_KEYS.AUTH, token);
         const storedUser = await SecureStore.getItemAsync("user");
 
         if (storedToken && storedUser) {

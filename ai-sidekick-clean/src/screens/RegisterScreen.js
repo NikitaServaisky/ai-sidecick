@@ -7,6 +7,8 @@ import * as SecureStore from 'expo-secure-store';
 import { useDispatch } from "react-redux";
 import { loginSuccess } from "../features/auth/authSlice";
 
+import styles from "../styles/RegisterScreenStyle"
+
 export default function RegisterScreen({ navigation }) {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
@@ -96,29 +98,3 @@ export default function RegisterScreen({ navigation }) {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: "center",
-    paddingHorizontal: 30,
-    backgroundColor: "#fff",
-  },
-  title: {
-    fontSize: 24,
-    textAlign: "center",
-    marginBottom: 30,
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: "#ccc",
-    marginBottom: 15,
-    padding: 10,
-    borderRadius: 5,
-  },
-  error: {
-    color: 'red',
-    textAlign: 'center',
-    marginBottom: 10,
-  }
-});

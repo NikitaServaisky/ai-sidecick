@@ -5,6 +5,7 @@ import { Pressable, View, Text, StyleSheet } from "react-native";
 import { useDispatch } from "react-redux";
 import { logout } from "../features/auth/authSlice";
 
+import styles from "../styles/CustomDrawerContetsStyle";
 
 export default function CustomDrawerContent(props) {
     const dispatch = useDispatch();
@@ -25,20 +26,3 @@ export default function CustomDrawerContent(props) {
         </DrawerContentScrollView>
     )
 }
-
-const styles = StyleSheet.create({
-  footer: {
-    marginTop: 20,
-    borderTopWidth: 1,
-    borderTopColor: "#ccc",
-    padding: 10,
-  },
-  logoutButton: {
-    paddingVertical: 10,
-  },
-  logoutText: {
-    color: "red",
-    fontWeight: "bold",
-    fontSize: 16,
-  },
-});

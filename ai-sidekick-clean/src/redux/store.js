@@ -6,14 +6,16 @@ import authReducer from "../features/auth/authSlice";
 import tasksReducer from "../features/tasks/tasksSlice";
 import taskTempReducer from "../features/tasks/taskTempSlice"; // חדש
 
+import { STORAGE_KEYS } from "../constans/constans";
+
 // configs
 const authPersistConfig = {
-  key: "auth",
+  key: STORAGE_KEYS.AUTH,
   storage: AsyncStorage,
 };
 
 const tasksPersistConfig = {
-  key: "tasks",
+  key: STORAGE_KEYS.AUTH,
   storage: AsyncStorage,
 };
 

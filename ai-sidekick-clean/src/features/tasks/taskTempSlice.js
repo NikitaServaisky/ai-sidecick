@@ -1,12 +1,14 @@
 import { createSlice } from "@reduxjs/toolkit";
 
+import { STORAGE_KEYS } from "../../constans/constans";
+
 const initialState = {
     image: null,
     attachment: null,
 };
 
 const taskTempSlice = createSlice({
-    name: 'taskTemp',
+    name: STORAGE_KEYS.TASK_TEMP,
     initialState,
     reducers: {
         setTempImage: (state, action) => {

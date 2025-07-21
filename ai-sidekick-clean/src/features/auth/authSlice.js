@@ -1,12 +1,14 @@
 import { createSlice } from "@reduxjs/toolkit";
 
+import { STORAGE_KEYS } from "../../constans/constans";
+
 const initialState = {
   token: null,
   user: null,
 };
 
 const authSlice = createSlice({
-  name: "auth",
+  name: STORAGE_KEYS.AUTH,
   initialState,
   reducers: {
     loginSuccess(state, action) {

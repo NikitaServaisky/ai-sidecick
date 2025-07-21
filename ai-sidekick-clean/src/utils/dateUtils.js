@@ -9,7 +9,7 @@ export function getCurrentWeekDates() {
   const week = [];
 
   const hebrewDays = ["א'", "ב'", "ג'", "ד'", "ה'", "ו'", "ש'"];
-  const keys = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"];
+  // const keys = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"];
 
   for (let i = 0; i < 7; i++) {
     const currentDate = new Date(startOfWeek);
@@ -20,7 +20,7 @@ export function getCurrentWeekDates() {
     const fullDate = currentDate.toISOString().slice(0, 10);
 
     week.push({
-       key: keys[i],
+       key: fullDate,
        label: hebrewDays[i],
        date: `${day}/${mounth}`,
        fullDate,

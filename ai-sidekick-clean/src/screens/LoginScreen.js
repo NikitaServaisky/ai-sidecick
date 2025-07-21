@@ -7,6 +7,9 @@ import * as SecureStore from "expo-secure-store";
 import { useDispatch } from "react-redux";
 import { loginSuccess } from "../features/auth/authSlice";
 
+import styles from "../styles/LoginScreenStyle";
+import { STORAGE_KEYS } from "../constans/constans";
+
 export default function LoginScreen({ navigation }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -20,7 +23,7 @@ export default function LoginScreen({ navigation }) {
       const user = responce.data.user;
       const token = responce.data.token;
 
-      await SecureStore.setItemAsync("token", token);
+      await SecureStore.setItemAsync(STORAGE_KEYS.AUTH, token);
       await SecureStore.setItemAsync("user", JSON.stringify(user))
       dispatch(loginSuccess({ user, token }));
 
@@ -57,29 +60,3 @@ export default function LoginScreen({ navigation }) {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: "center",
-    paddingHorizontal: 30,
-    backgroundColor: "#fff",
-  },
-  title: {
-    fontSize: 24,
-    textAlign: "center",
-    marginBottom: 30,
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: "#ccc",
-    marginBottom: 15,
-    padding: 10,
-    borderRadius: 5,
-  },
-  error: {
-    color: "red",
-    textAlign: "center",
-    marginBottom: 10,
-  },
-});

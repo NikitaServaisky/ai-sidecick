@@ -3,7 +3,6 @@ import {
   View,
   Text,
   TextInput,
-  StyleSheet,
   Pressable,
   Alert,
 } from "react-native";
@@ -22,6 +21,9 @@ import FilePicker from "../components/FilePicker";
 import { addTask } from "../features/tasks/tasksSlice";
 import { formatDateKey, formatTimeString } from "../utils/taskHelpers";
 import { handlePickDocument, handlePickImage } from "../utils/handlers";
+
+import styles from "../styles/AddTaskScreenStyle";
+import { TEXTS } from "../constans/constans";
 
 export default function AddTaskScreen() {
   const dispatch = useDispatch();
@@ -142,33 +144,8 @@ export default function AddTaskScreen() {
       <ImageSelector onPress={handleImageSelection} imageUri={image?.uri} />
 
       <Pressable style={styles.saveButton} onPress={handleSaveTask}>
-        <Text style={styles.saveButtonText}>💾 שמור משימה</Text>
+        <Text style={styles.saveButtonText}>{TEXTS.SAVE_TASK}</Text>
       </Pressable>
     </View>
   );
 }
-
-export const styles = StyleSheet.create({
-  container: { flex: 1, padding: 20, backgroundColor: "#fff" },
-  input: {
-    borderBottomWidth: 1,
-    borderColor: "#ccc",
-    marginBottom: 15,
-    padding: 8,
-  },
-  link: {
-    color: "blue",
-    marginTop: 10,
-  },
-  saveButton: {
-    backgroundColor: "#000",
-    padding: 15,
-    borderRadius: 8,
-    marginTop: 30,
-    alignItems: "center",
-  },
-  saveButtonText: {
-    color: "#fff",
-    fontSize: 18,
-  },
-});

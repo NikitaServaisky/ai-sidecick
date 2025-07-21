@@ -1,6 +1,8 @@
 import React from "react";
 import { FlatList, TouchableOpacity, Text, StyleSheet } from "react-native";
 
+import styles from "../styles/WeekCaruselStyle";
+
 export default function WeekCarusel({ weekDays, selectedDay, onDayPress }) {
   const renderItem = ({ item }) => (
     <TouchableOpacity
@@ -29,31 +31,3 @@ export default function WeekCarusel({ weekDays, selectedDay, onDayPress }) {
     />
   );
 }
-
-const styles = StyleSheet.create({
-  dayCard: {
-    padding: 10,
-    marginHorizontal: 5,
-    backgroundColor: "#eee",
-    borderRadius: 8,
-  },
-  selectedCard: {
-    backgroundColor: "#007AFF",
-  },
-  todayCard: {
-    borderWidth: 1,
-    borderColor: "#007AFF",
-  },
-  dayText: {
-    color: "#333",
-    textAlign: "center",
-  },
-  dateText: {
-    color: "#666",
-    textAlign: "center",
-  },
-  weekList: {
-    paddingHorizontal: 10,
-    paddingBottom: 10,
-  },
-});
