@@ -1,86 +1,113 @@
-# AI Sidekick
+# AI Sidekick – Task Management App
 
-AI Sidekick is a personal productivity app designed to help users manage their daily routines, calendar events, and receive smart morning tips. Built with React Native and structured for clean modular development.
+AI Sidekick is a React Native app designed to help users manage tasks with time, categories, files, and optional premium features like exporting and smart reminders.
 
 ---
 
-## 📁 Project Structure
+## 📁 Project Structure (Frontend)
+
 ```
-ai-sidekick/
-├── App.js                  # Main app component
-├── index.js                # Entry point using AppRegistry
-├── app.json                # Expo configuration
-├── app.config.js           # Dynamic config if needed
-├── package.json            # Project metadata and dependencies
-├── package-lock.json       # Lock file for npm
-├── assets/                 # App icons and splash images
-│   ├── favicon.png
-│   ├── splash-icon.png
-│   ├── icon.png
-│   └── adaptive-icon.png
-├── components/             # Shared UI components
-│   └── MorningTip.js       # Morning tip display component
-├── screens/                # Screen views
-│   ├── CalendarScreen.js   # Weekly/monthly calendar UI
-│   └── HomeScreen.js       # App home screen
-├── services/               # Utility logic and services
-│   ├── CalendarUtils.js    # Helper functions for calendar logic
-│   └── notifications.js    # Local notifications handling
+src/
+├── components/        # UI components (DatePicker, TaskModal, etc.)
+├── constants/         # Global constants (keys, colors, roles, texts)
+├── features/          # Redux slices (auth, tasks, holidays)
+│   └── tasks/
+│       ├── tasksSlice.js
+│       ├── taskTempSlice.js
+│       └── taskHelpers.js
+├── navigation/        # Navigation structure (Drawer + Stack)
+├── redux/             # Store configuration
+├── screens/           # App screens (HomeScreen, AddTaskScreen, etc.)
+├── services/          # Axios instance, storage handling
+├── styles/            # Shared style files per screen
+└── utils/             # General helper functions
 ```
 
 ---
 
-## 🛠️ Getting Started
+## 🔄 Data Flow
 
-1. Install Node.js and npm  
-2. Install Expo CLI:
+### Adding a task:
+1. User fills form in `AddTaskScreen`
+2. Task is dispatched to Redux via `addTask(date, title, ...)`
+3. Stored in `state.tasks.taskLists`
+4. Rendered in `HomeScreen` and `TaskModal` using `selectTasksForDay(date)`
 
+---
+
+## 📦 Redux Overview
+
+- **Slices:**
+  - `authSlice` → stores user + token
+  - `tasksSlice` → manages tasks by day (`taskLists`)
+  - `taskTempSlice` → temporary file/image storage before saving
+
+- **Persisted Keys:**  
+  Defined in `src/constants/constants.js`
+  ```js
+  STORAGE_KEYS = {
+    AUTH: "auth",
+    TASKS: "tasks",
+    TASK_TEMP: "taskTemp"
+  }
+  ```
+
+---
+
+## 👤 User Roles
+
+Handled in `USER_ROLES` constant:
+- `basic`: Free user
+- `premium`: Paid features
+- `admin`: Future use
+
+Use to conditionally show premium features.
+
+---
+
+## 🖼️ UI Components
+
+- `TaskModal`: Show and delete tasks for a day
+- `WeekCarusel`: Horizontal scroll for week selection
+- `ImageSelector` / `FilePicker`: Attachments and images
+- `DatePicker`, `TimePicker`: Set timing for task
+
+---
+
+## 🧠 Future Features
+
+- Premium access control
+- Export to PDF or calendar
+- AI-based reminders
+- User analytics dashboard
+
+---
+
+## 🔐 Backend (server folder)
+
+Located in `/server`, following MVC:
+- `routes/`, `controllers/`, `models/`
+- MongoDB with Mongoose
+- User login, file upload, holiday API
+
+---
+
+## 🚀 Running the Project
+
+### Frontend (Expo):
 ```bash
-npm install -g expo-cli
-```
-
-3. Install project dependencies:
-
-```bash
+cd ai-sidekick-clean
 npm install
+npm start
 ```
 
-4. Start the development server:
-
+### Backend (Node.js):
 ```bash
-expo start
+cd server
+npm install
+node index.js
 ```
 
-Scan the QR code using the Expo Go app on your device, or use an Android/iOS emulator.
-
 ---
 
-## 🧪 Features (In Progress)
-
-- [ ] Weekly calendar screen with gestures  
-- [ ] Daily motivational tips  
-- [ ] Push notification system  
-- [ ] Custom habit tracking system  
-- [ ] Local holiday recognition logic (future)
-
----
-
-## 🔒 Privacy & Ownership
-
-This app does not use third-party data storage or analytics.  
-All data is intended to be stored locally or on a private server.  
-Expo is used solely as a development and build tool and does not access user data.
-
----
-
-## 📌 Notes for Developers
-
-- Use clear commit messages, e.g., `feat: add calendar screen` or `fix: adjust layout for tablet view`
-- Keep this README updated with any structural or functional changes
-- Document new components or utilities in-line and in the README when appropriate
-
----
-
-Built by [Nikita Servaisky](https://github.com/NikitaServaisky) with assistance from ChatGPT.
-
-> "I prefer to be honest and give credit where it's due, even if it means a little less spotlight."
+© 2025 by Nikita Servaisky
